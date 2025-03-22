@@ -55,3 +55,9 @@ def join_class(request, class_id):
         send_mail(subject, message,'c.umuhire@alustudent.com', recipient_list)
 
     return redirect("class_list")
+
+
+def logout_view(request):
+    logout(request)
+    messages.success(request, "You have been logged out successfully.")
+    return redirect("login")  # Redirect to the login page after logout
