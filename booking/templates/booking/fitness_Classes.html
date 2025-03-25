@@ -11,8 +11,12 @@
         <h3>{{ fitness_class.name }}</h3>
         <p>{{ fitness_class.description }}</p>
         <p>Instructor: {{ fitness_class.instructor.username }}</p>
-        <p>Schedule: {{ fitness_class.schedule }}</p>
-        <a href="{% url 'join_class' fitness_class.id %}" class="btn btn-primary">Join Class</a>
+        <p>Scheduled for : {{ fitness_class.schedule }}</p>
+        {% if fitness_class.id in booked_classes %}
+        <button class="btn btn-secondary" disabled>Already Joined!</button>
+        {% else %}
+            <a href="{% url 'join_class' fitness_class.id %}" class="btn btn-primary">Join Class</a>
+        {% endif %}
     </div>
     <hr>
 {% endfor %}

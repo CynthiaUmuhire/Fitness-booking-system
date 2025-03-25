@@ -5,6 +5,7 @@ from django.contrib import messages
 from django.core.mail import send_mail
 
 from booking.forms import CustomUserCreationForm
+from fitness_booking_system.settings import EMAIL_HOST_USER
 from .models import FitnessClass, Booking
 
 def user_login(request):
@@ -37,7 +38,9 @@ def register(request):
 @login_required
 def fitness_list(request):
     classes = FitnessClass.objects.all()
-    return render(request, "booking/fitness_Classes.html", {"classes": classes})
+    user_bookings = Booking.objects.filter(user=request.user)
+    booked_classes = [booking.fitness_class.id for booking in user_bookings]
+    return render(request, "booking/fitness_Classes.html", {"classes": classes, "booked_classes": booked_classes})
 
 
 @login_required
@@ -50,9 +53,9 @@ def join_class(request, class_id):
         messages.success(request, "You successfully joined the class!")
               # Send email notification
         subject = "Class Booking Confirmation"
-        message = f"Hi {request.user.username},\n\nYou have successfully joined the class: {fitness_class.name}.\n\nDetails:\nInstructor: {fitness_class.instructor.username}\nSchedule: {fitness_class.schedule}\n\nThank you for booking with us!"
+        message = f"Hello {request.user.username},\n\nYou have successfully joined the fitness class: {fitness_class.name}.\n\nDetails:\nInstructor: {fitness_class.instructor.username}\nSchedule: {fitness_class.schedule}\n\nThank you for booking with us!"
         recipient_list = [request.user.email]
-        send_mail(subject, message,'c.umuhire@alustudent.com', recipient_list)
+        send_mail(subject, message,EMAIL_HOST_USER, recipient_list)
 
     return redirect("class_list")
 
