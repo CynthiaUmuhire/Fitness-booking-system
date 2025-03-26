@@ -6,10 +6,8 @@ __pycache__/
 *.swp
 *.swo
 
-
-fitness-venv/
-
 .env
+fitness-venv/
 
 
 *.env
