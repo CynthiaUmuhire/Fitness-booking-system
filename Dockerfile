@@ -1,11 +1,25 @@
-FROM python:3.13-slim  
+FROM python:alpine
 
-RUN mkdir /booking
-WORKDIR /booking
-RUN pip install --upgrade pip
-COPY requirements.txt  /booking/
-RUN pip install -r requirements.txt
-COPY . /booking/
+RUN mkdir /code
+WORKDIR /code
+COPY . /code
+
+RUN apk add python3-dev build-base linux-headers pcre-dev
+RUN pip install uwsgi
+RUN pip3 install -r requirements.txt
+
+
+# Set environment variables 
+
+ENV PYTHONDONTWRITEBYTECODE=1
+ENV PYTHONUNBUFFERED=1 
+ENV DJANGO_ENV=prod
+ENV DOCKER_CONTAINER=1
+ENV DEBUD = False
+
 EXPOSE 8000
 
-CMD ["gunicorn", "fitness_booking_system.wsgi:application", "--bind 0.0.0.0:8000"]
+CMD ["uwsgi", "--ini", "/code/mysite.uwsgi.ini"]
+
+RUN mkdir /var/run/app-uwsgi
+RUN chmod -R 777 /var/run/app-uwsgi
