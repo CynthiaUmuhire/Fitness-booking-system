@@ -18,3 +18,7 @@ docker-compose.override.yml
 
 **/migrations/*.py
 !**/migrations/__init__.py
+
+
+
+ansible/cynthia_booking

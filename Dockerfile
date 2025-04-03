@@ -4,7 +4,7 @@ RUN mkdir /code
 WORKDIR /code
 COPY . /code
 
-RUN apk add python3-dev build-base linux-headers pcre-dev
+RUN apk add python3-dev build-base linux-headers pcre-dev sshpass
 RUN pip install uwsgi
 RUN pip3 install -r requirements.txt
 
@@ -19,7 +19,8 @@ ENV DEBUD = False
 
 EXPOSE 8000
 
-CMD ["uwsgi", "--ini", "/code/mysite.uwsgi.ini"]
-
 RUN mkdir /var/run/app-uwsgi
 RUN chmod -R 777 /var/run/app-uwsgi
+
+CMD ["uwsgi", "--ini", "/code/mysite.uwsgi.ini"]
+

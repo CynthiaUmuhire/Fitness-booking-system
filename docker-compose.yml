@@ -18,7 +18,22 @@ services:
     restart: always
     ports:
       - "8000:8000"
+    volumes:
+      - uwsgi_socket:/var/run/app-uwsgi
     depends_on:
       - db
+
+  nginx:
+    build: ./nginx/
+    restart: always  
+    ports:
+      - "8888:80"
+    volumes:
+      - uwsgi_socket:/var/run/app-uwsgi
+      - ./nginx/mysite.nginx.conf:/etc/nginx/sites-enabled/mysite.nginx.conf
+    depends_on: 
+      - web
+
 volumes:
   postgres_data:
+  uwsgi_socket:
