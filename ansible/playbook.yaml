@@ -1,0 +1,81 @@
+- name: Deploy fitness system management
+  hosts: servers
+  become: yes
+  remote_user: ubuntu
+
+  tasks:
+    - name: Install aptitude
+      apt:
+        name: aptitude
+        state: latest
+        update_cache: yes
+
+    - name: Install required system packages
+      apt:
+        name:
+          - apt-transport-https
+          - ca-certificates
+          - curl
+          - software-properties-common
+          - python3-pip
+          - virtualenv
+          - python3-setuptools
+        state: latest
+        update_cache: yes
+
+    - name: Add Docker GPG apt key
+      apt_key:
+        url: https://download.docker.com/linux/ubuntu/gpg
+        state: present
+
+    - name: Add Docker repository
+      apt_repository:
+        repo: deb https://download.docker.com/linux/ubuntu {{ ansible_lsb.codename }} stable
+        state: present    
+
+    - name: Install Docker
+      apt:
+        name: docker-ce
+        state: latest
+        update_cache: yes
+
+    - name: Install Docker Compose
+      get_url:
+        url: https://github.com/docker/compose/releases/download/1.29.2/docker-compose-Linux-x86_64
+        dest: /usr/local/bin/docker-compose
+        mode: 'u+x,g+x'
+
+    - name: Ensure user is in docker group
+      user:
+        name: "{{ ansible_user }}"
+        groups: docker
+        append: yes
+
+    - name: Create project directory
+      file:
+        path: /home/{{ ansible_user }}/fitness_app
+        state: directory
+        mode: '0755'
+
+    - name: Copy docker-compose.yml to target server
+      copy:
+        src: docker-compose.yml
+        dest: /home/{{ ansible_user }}/fitness_app/docker-compose.yml
+
+    - name: Copy Dockerfile and application code
+      copy:
+        src: "{{ item }}"
+        dest: /home/{{ ansible_user }}/fitness_app/
+      with_items:
+        - Dockerfile
+        - booking/
+        - nginx/
+        - fitness_booking_system/
+        - requirements.txt
+        - mysite.uwsgi.ini
+
+    - name: Build and run docker-compose
+      community.docker.docker_compose_v2:
+        project_src: /home/{{ ansible_user }}/fitness_app
+        build: yes
+        state: present

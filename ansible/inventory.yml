@@ -1,0 +1,2 @@
+[servers]
+DevOps-1 ansible_host=64.23.210.235 ansible_user=ubuntu ansible_ssh_private_key_file=/home/{{{{ ansible_user }}}}/.ssh/id_ed25519
